@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>User Dashboard</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        display: flex;
+        height: 100vh;
+        background-color: #e8f5e9;
+        overflow: hidden;
+      }
+
+      .user-container {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+      }
+
+      /* Sidebar styling */
+      .sidebar {
+        width: 240px;
+        background: linear-gradient(to bottom, #2e7d32, #1b5e20);
+        color: white;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .sidebar h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 1.5rem;
+        border-bottom: 2px solid #c8e6c9;
+        padding-bottom: 0.5rem;
+      }
+
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .sidebar ul li {
+        margin: 15px 0;
+      }
+
+      .sidebar ul li a {
+        color: #5e5b5b;
+        text-decoration: none;
+        font-weight: 600;
+        display: block;
+        padding: 10px 15px;
+        border-radius: 6px;
+        transition: background 0.3s, transform 0.2s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .sidebar ul li a:hover {
+        background: #66bb6a;
+        transform: translateX(4px);
+      }
+
+      /* Main content styling */
+      .content {
+        flex: 1;
+        padding: 2rem 3rem;
+        background: #f1f8e9;
+        overflow-y: auto;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .content section {
+        animation: fadeIn 0.4s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Form styling */
+      form {
+        display: flex;
+        flex-direction: column;
+        max-width: 400px;
+        gap: 12px;
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      input,
+      button,
+      textarea {
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: #66bb6a;
+        outline: none;
+        box-shadow: 0 0 4px rgba(102, 187, 106, 0.6);
+      }
+
+      button {
+        background-color: #43a047;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+
+      button:hover {
+        background-color: #388e3c;
+        transform: scale(1.02);
+      }
+
+      /* Hidden section toggle */
+      .hidden {
+        display: none;
+      }
+
+      /* List styling for soil/distributor entries */
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 1rem;
+      }
+
+      ul li {
+        background: #ffffff;
+        margin: 10px 0;
+        padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s;
+      }
+
+      ul li:hover {
+        transform: scale(1.01);
+        background-color: #f9fff4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="user-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h2>User Panel</h2>
+        <ul>
+          <li><a href="#" onclick="showSection('register')">Register</a></li>
+          <li><a href="#" onclick="showSection('login')">Login</a></li>
+          <li>
+            <a href="#" onclick="showSection('soil')">View Soil Details</a>
+          </li>
+          <li>
+            <a href="#" onclick="showSection('distributor')"
+              >View Distributor Details</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="content">
+        <!-- Register Section -->
+        <section id="register" class="hidden">
+          <h2>User Registration</h2>
+          <form id="registerForm">
+            <input type="text" placeholder="Full Name" required />
+            <input type="email" placeholder="Email" required />
+            <input type="password" placeholder="Password" required />
+            <button type="submit">Register</button>
+          </form>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login" class="hidden">
+          <h2>User Login</h2>
+          <form id="loginForm">
+            <input type="email" placeholder="Email" required />
+            <input type="password" placeholder="Password" required />
+            <button type="submit">Login</button>
+          </form>
+        </section>
+
+        <!-- Soil Details Section -->
+        <section id="soil" class="hidden">
+          <h2>Available Soil Types</h2>
+          <ul id="soilList">
+            <li>Loamy Soil – Good for most crops</li>
+            <li>Clay Soil – Retains nutrients well</li>
+            <li>Sandy Soil – Drains quickly, needs more nutrients</li>
+          </ul>
+        </section>
+
+        <!-- Distributor Details Section -->
+        <section id="distributor" class="hidden">
+          <h2>Distributors Near You</h2>
+          <ul id="distributorList">
+            <li>Green Seeds Co. – Delhi – Seeds & Fertilizers</li>
+            <li>Agritech Supplies – Punjab – Crop Tools</li>
+            <li>Farmland Distributors – Maharashtra – Organic Seeds</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      function showSection(id) {
+        // Hide all sections
+        document.querySelectorAll("main section").forEach((section) => {
+          section.classList.add("hidden");
+        });
+        // Show the selected section
+        document.getElementById(id).classList.remove("hidden");
+      }
+
+      // Optional: Show Register by default on load
+      window.onload = () => showSection("register");
+    </script>
+  </body>
+</html>

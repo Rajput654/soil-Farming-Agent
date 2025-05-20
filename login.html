@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login - Soil Farming Agent</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-image: url('index-background.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .login-container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+    }
+    
+    h2 {
+      color: #2e7d32;
+      margin-bottom: 1.5rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    button {
+      width: 48%;
+      padding: 12px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    button:hover {
+      background-color: #388e3c;
+    }
+
+    button + button {
+      margin-left: 4%;
+      background-color: #2196f3;
+    }
+    button + button:hover {
+      background-color: #1565c0;
+    }
+    
+    .error {
+      color: #f44336;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Loading spinner for button */
+    .button-spinner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .button-text {
+      visibility: visible;
+    }
+
+    .button-loading .button-text {
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2 id="formTitle">Admin Login</h2>
+    <form id="authForm">
+      <input type="email" id="email" placeholder="Email" required /><br />
+      <input type="password" id="password" placeholder="Password" required /><br />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" class="hidden" required /><br />
+      <div id="errorMessage" class="error"></div>
+      <button type="submit" id="submitBtn">
+        <span class="button-text">Login</span>
+        <div class="button-spinner hidden"></div>
+      </button>
+      <button type="button" id="toggleBtn">Register</button>
+    </form>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwiRdsWOmPze8TJS5hCt2VR478v6X4DPk",
+      authDomain: "soil-farming-agent-8164b.firebaseapp.com",
+      projectId: "soil-farming-agent-8164b",
+      storageBucket: "soil-farming-agent-8164b.appspot.com",
+      messagingSenderId: "208877873622",
+      appId: "1:208877873622:web:ada83016e8e721840e1c77",
+      measurementId: "G-KXP0CX7BS8"
+    };
+
+    try {
+      const app = firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+
+      const authForm = document.getElementById("authForm");
+      const toggleBtn = document.getElementById("toggleBtn");
+      const submitBtn = document.getElementById("submitBtn");
+      const submitBtnText = submitBtn.querySelector('.button-text');
+      const submitBtnSpinner = submitBtn.querySelector('.button-spinner');
+      const formTitle = document.getElementById("formTitle");
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+      const errorMessage = document.getElementById("errorMessage");
+
+      let isLogin = true;
+
+      toggleBtn.addEventListener("click", () => {
+        errorMessage.textContent = "";
+        authForm.reset();
+
+        if (isLogin) {
+          isLogin = false;
+          formTitle.textContent = "Admin Register";
+          submitBtnText.textContent = "Register";
+          toggleBtn.textContent = "Back to Login";
+          confirmPasswordInput.classList.remove("hidden");
+        } else {
+          isLogin = true;
+          formTitle.textContent = "Admin Login";
+          submitBtnText.textContent = "Login";
+          toggleBtn.textContent = "Register";
+          confirmPasswordInput.classList.add("hidden");
+        }
+      });
+
+      authForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorMessage.textContent = "";
+        
+        // Show loading state on button
+        submitBtn.classList.add("button-loading");
+        submitBtn.disabled = true;
+        submitBtnSpinner.classList.remove("hidden");
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (!isLogin) {
+          const confirmPassword = confirmPasswordInput.value.trim();
+          if (password !== confirmPassword) {
+            errorMessage.textContent = "Passwords do not match.";
+            resetButtonState();
+            return;
+          }
+
+          try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            await userCredential.user.sendEmailVerification();
+            alert("Registration successful! Please verify your email before logging in.");
+            toggleBtn.click();
+            authForm.reset();
+          } catch (error) {
+            console.error("Registration error:", error);
+            switch (error.code) {
+              case "auth/email-already-in-use":
+                errorMessage.textContent = "Email already in use.";
+                break;
+              case "auth/invalid-email":
+                errorMessage.textContent = "Invalid email format.";
+                break;
+              case "auth/weak-password":
+                errorMessage.textContent = "Password should be at least 6 characters.";
+                break;
+              default:
+                errorMessage.textContent = "Registration failed. Please try again.";
+            }
+          } finally {
+            resetButtonState();
+          }
+        } else {
+          try {
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            if (userCredential.user.emailVerified) {
+              authForm.reset();
+              window.location.href = "dashboard.html";
+            } else {
+              errorMessage.textContent = "Please verify your email first.";
+              await auth.signOut();
+            }
+          } catch (error) {
+            console.error("Login error:", error);
+            switch (error.code) {
+              case "auth/invalid-email":
+                errorMessage.textContent = "Invalid email format";
+                break;
+              case "auth/user-disabled":
+                errorMessage.textContent = "This account has been disabled";
+                break;
+              case "auth/user-not-found":
+              case "auth/wrong-password":
+                errorMessage.textContent = "Invalid email or password";
+                break;
+              case "auth/too-many-requests":
+                errorMessage.textContent = "Too many attempts. Try again later or reset your password.";
+                break;
+              default:
+                errorMessage.textContent = "Login failed. Please try again.";
+            }
+          } finally {
+            resetButtonState();
+          }
+        }
+      });
+
+      function resetButtonState() {
+        submitBtn.classList.remove("button-loading");
+        submitBtn.disabled = false;
+        submitBtnSpinner.classList.add("hidden");
+      }
+    } catch (error) {
+      console.error("Firebase initialization error:", error);
+      document.getElementById("errorMessage").textContent = "System error. Please try again later.";
+    }
+  </script>
+</body>
+</html>
