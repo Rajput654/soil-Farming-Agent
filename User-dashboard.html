@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -55,7 +55,9 @@
         display: block;
         padding: 10px 15px;
         border-radius: 6px;
-        transition: background 0.3s, transform 0.2s;
+        transition:
+          background 0.3s,
+          transform 0.2s;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -124,7 +126,9 @@
         cursor: pointer;
         font-weight: bold;
         border: none;
-        transition: background-color 0.3s, transform 0.2s;
+        transition:
+          background-color 0.3s,
+          transform 0.2s;
       }
 
       button:hover {
@@ -235,6 +239,16 @@
 
       // Optional: Show Register by default on load
       window.onload = () => showSection("register");
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        fetch("/api/soil")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((err) => console.error(err));
+      });
     </script>
   </body>
 </html>
