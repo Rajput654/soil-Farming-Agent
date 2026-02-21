@@ -162,6 +162,32 @@
         background-color: #f9fff4;
       }
     </style>
+    <script>
+      document
+        .getElementById("soilForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const response = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              soilType: document.getElementById("soilType").value,
+              pH: Number(document.getElementById("pH").value),
+              nitrogen: document.getElementById("nitrogen").value,
+              rainfall: Number(document.getElementById("rainfall").value),
+            }),
+          });
+
+          const data = await response.json();
+
+          document.getElementById("result").innerHTML = `
+      <h3>Recommended Crops:</h3>
+      <p>${data.recommendedCrops.join(", ")}</p>
+      <p><strong>Advice:</strong> ${data.advice}</p>
+    `;
+        });
+    </script>
   </head>
   <body>
     <div class="user-container">
@@ -226,6 +252,22 @@
         </section>
       </main>
     </div>
+    <h2>Soil Analysis</h2>
+
+    <form id="soilForm">
+      <input type="text" placeholder="Soil Type" id="soilType" required />
+      <input type="number" placeholder="pH Level" id="pH" required />
+      <input
+        type="text"
+        placeholder="Nitrogen (low/medium/high)"
+        id="nitrogen"
+        required
+      />
+      <input type="number" placeholder="Rainfall (mm)" id="rainfall" required />
+      <button type="submit">Analyze</button>
+    </form>
+
+    <div id="result"></div>
 
     <script>
       function showSection(id) {

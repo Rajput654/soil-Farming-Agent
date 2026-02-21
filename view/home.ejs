@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Welcome to <%= title %></h1>
+
+  <a href="/login">Login</a>
+
+  <h2>Available Soils</h2>
+  <div id="soil-data"></div>
+
+  <script>
+    fetch("/api/soil")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("soil-data");
+        data.forEach(soil => {
+          container.innerHTML += `
+            <div>
+              <h3>${soil.type}</h3>
+              <p>${soil.description}</p>
+              <p>pH: ${soil.pHLevel}</p>
+            </div>
+          `;
+        });
+      });
+  </script>
+</body>
+</html>
